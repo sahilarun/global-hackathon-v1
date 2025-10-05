@@ -5,7 +5,7 @@ class DatabaseService {
   constructor() {
     this.supabase = createClient(
       process.env.SUPABASE_URL,
-      process.env.SUPABASE_ANON_KEY
+      process.env.SUPABASE_SERVICE_ROLE_KEY
     );
   }
 
@@ -13,12 +13,12 @@ class DatabaseService {
     try {
       const { data, error } = await this.supabase
         .from('users')
-        .select('*')
+        .select('id, email, password, name')
         .eq('email', email)
-        .single();
+        .maybeSingle();
 
-      if (error) throw error;
-      return data;
+      if (error && error.code !== 'PGRST116') throw error;
+      return data || null;
     } catch (error) {
       logger.error('Error fetching user by email:', error);
       throw error;
@@ -29,12 +29,12 @@ class DatabaseService {
     try {
       const { data, error } = await this.supabase
         .from('users')
-        .select('*')
+        .select('id, email, name')
         .eq('id', id)
-        .single();
+        .maybeSingle();
 
-      if (error) throw error;
-      return data;
+      if (error && error.code !== 'PGRST116') throw error;
+      return data || null;
     } catch (error) {
       logger.error('Error fetching user by id:', error);
       throw error;
@@ -46,10 +46,11 @@ class DatabaseService {
       const { data, error } = await this.supabase
         .from('users')
         .insert([userData])
-        .select();
+        .select('id, email, name')
+        .maybeSingle();
 
       if (error) throw error;
-      return data[0];
+      return data || null;
     } catch (error) {
       logger.error('Error inserting user:', error);
       throw error;
