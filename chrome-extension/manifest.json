@@ -1,0 +1,45 @@
+{
+  "manifest_version": 3,
+  "name": "Rewindly - AI Activity Tracker",
+  "version": "1.0.0",
+  "description": "AI-powered personal productivity and activity analyzer that tracks your digital life",
+  
+  "permissions": [
+    "activeTab",
+    "tabs",
+    "storage",
+    "idle",
+    "background",
+    "alarms"
+  ],
+  
+  "host_permissions": [
+    "http://localhost:3001/*",
+    "https://your-api-domain.com/*"
+  ],
+  
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "run_at": "document_end"
+    }
+  ],
+  
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Rewindly Activity Tracker"
+  },
+  
+  "web_accessible_resources": [
+    {
+      "resources": ["icons/*"],
+      "matches": ["<all_urls>"]
+    }
+  ]
+}
